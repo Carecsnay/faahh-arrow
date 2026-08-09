@@ -1,25 +1,13 @@
 const vscode = require("vscode");
 const path = require("path");
-const { exec } = require("child_process");
+const sound = require("sound-play");
 
 function activate(context) {
     let disposableCommand = vscode.commands.registerCommand("faahh-arrow.playSound", () => {
         const audioPath = path.join(context.extensionPath, "src", "sounds", "fah.mp3");
 
-        const psScript = `
-            Add-Type -AssemblyName presentationCore;
-            $player = New-Object System.Windows.Media.MediaPlayer;
-            $player.Open([Uri]'${audioPath}');
-            $player.Play();
-            Start-Sleep -s 2;
-        `.replace(/\n/g, " ");
-
-        const command = `powershell -c "${psScript}"`;
-
-        exec(command, (error) => {
-            if (error) {
-                vscode.window.showErrorMessage(`Erro ao tocar som: ${error.message}`);
-            }
+        sound.play(audioPath).catch((error) => {
+            vscode.window.showErrorMessage(`Erro ao tocar som: ${error.message}`);
         });
     });
 
